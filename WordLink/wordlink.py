@@ -2,6 +2,7 @@
 
 import sys
 import json
+import os
 from os.path import expanduser
 
 class WordLink:
@@ -22,15 +23,15 @@ exit            exit program
 		self.file = None
 		self.data = None
 		self.path = path
+		self.do_welcome()
 		self.do_load_db()
 		self.do_cmdloop()
 
 	def do_welcome(self):
-		print("""
-			WordLink (from GRETools)
-			[✓] A tool for you to collect and check related words (useful for AWA)
-			Type ?? for help
-			""", end="")
+		print("""WordLink (from GRETools)
+|| [✓] A tool for you to collect and check related words (useful for AWA)
+|| Type ?? for help
+""", end="")
 
 	def do_cmdloop(self):
 		self.do_prompt()
@@ -161,19 +162,21 @@ exit            exit program
 		return arg.split()
 
 	def err_invalid_cmd(self, args):
-		print("[X] Command not found: ", *args)
+		print("[✘] Command not found")
 
 	def err_too_few_args(self, expect_count, msg=""):
-		print("[X] " + msg + "Too few arguments, expect " + str(expect_count))
+		print("[✘] " + msg + "Too few arguments, expect " + str(expect_count))
 
 	def err_custom(self, err_msg):
-		print("[X] " + err_msg)
+		print("[✘] " + err_msg)
 
 	def warn_custom(self, warn_msg):
 		print("[!] " + warn_msg)
 
 
 def main():
+	if not os.path.exists(expanduser('~/.gretools')):
+		os.makedirs(expanduser('~/.gretools'))
 	WordLink(expanduser('~/.gretools/wordlink.gretools'))
 
 if __name__ == '__main__':

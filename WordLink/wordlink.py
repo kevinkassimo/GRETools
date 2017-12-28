@@ -15,6 +15,7 @@ Syntax:
 -- word         remove this word
 + word1 word2   link 2 words
 - word1 word2   remove link between words
+* word1 word2   link 2 words and already linked words
 ? word          query word link
 exit            exit program
 """
@@ -105,6 +106,8 @@ exit            exit program
 				self.data['entries'][word_1] = {}
 			if word_2 not in self.data['entries']:
 				self.data['entries'][word_2] = {}
+			if word_1 == word_2: # avoid self link
+				return
 			self.data['entries'][word_1][word_2] = 0
 			self.data['entries'][word_2][word_1] = 0
 			self.do_update_db()
@@ -121,8 +124,34 @@ exit            exit program
 			if word_2 not in self.data['entries']:
 				self.warn_custom("'%s' not added" % (word_2))
 				return
+			if word_1 == word_2: # avoid self unlink
+				return
 			self.data['entries'][word_1].pop(word_2, None)
 			self.data['entries'][word_2].pop(word_1, None)
+			self.do_update_db()
+
+	def do_link_all(self, args):
+		if len(args) < 2:
+			self.err_too_few_args(2, "Cannot link: ")
+		else:
+			word_1 = args[0]
+			word_2 = args[1]
+			def rec(w_1, w_2):
+				if w_1 not in self.data['entries']:
+					self.data['entries'][w_1] = {}
+				if w_2 not in self.data['entries']:
+					self.data['entries'][w_2] = {}
+				if w_1 == w_2: # avoid self link
+					return
+				if w_1 in self.data['entries'][w_2] and w_2 in self.data['entries'][w_1]: # complete
+					return
+				self.data['entries'][w_1][w_2] = 0
+				self.data['entries'][w_2][w_1] = 0
+				for link_word in self.data['entries'][w_1]:
+					rec(link_word, w_2)
+				for link_word in self.data['entries'][w_2]:
+					rec(w_1, link_word)
+			rec(word_1, word_2)
 			self.do_update_db()
 
 	def do_find(self, args):
@@ -149,6 +178,7 @@ exit            exit program
 				'??': self.do_help,
 				'+': self.do_link,
 				'-': self.do_delink,
+				'*': self.do_link_all,
 				'?': self.do_find,
 				'++': self.do_add,
 				'--': self.do_del,

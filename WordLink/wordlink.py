@@ -147,9 +147,9 @@ exit            exit program
 					return
 				self.data['entries'][w_1][w_2] = 0
 				self.data['entries'][w_2][w_1] = 0
-				for link_word in self.data['entries'][w_1]:
+				for link_word in dict(self.data['entries'][w_1]):
 					rec(link_word, w_2)
-				for link_word in self.data['entries'][w_2]:
+				for link_word in dict(self.data['entries'][w_2]):
 					rec(w_1, link_word)
 			rec(word_1, word_2)
 			self.do_update_db()

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+FILE="$HOME/.gretools/wordlist.gretools"
+
+touch $FILE
+
+if [[ -z $1 ]]; then
+  less $FILE
+elif [[ $1 == '-v' ]]; then
+  vim $FILE
+elif [[ $1 == '-d' ]]; then
+  sed -i.bak "\#^$2\$#d" $FILE && echo "Deleted '$2' successfully"
+else
+  if grep -q -e "^$1\$" $FILE; then
+    echo "Word '$1' already recorded"
+  else
+    echo "$1" >> $FILE 
+    sort $FILE -o $FILE
+    echo "Inserted word '$1' successfully"
+  fi
+fi

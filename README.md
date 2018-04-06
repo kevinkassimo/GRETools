@@ -14,3 +14,6 @@ Besides that, everything about saved data will be under `~/.gretools/`.
 
 ### WordLink (wordlink.py)
 This is used for yourself to save and lookup related words or synonym.
+
+### Words (gre-words)
+Simple new words collection (sorted)
